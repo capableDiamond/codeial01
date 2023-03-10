@@ -7,6 +7,10 @@
     <title>
         <%= title %>
     </title>
+    <link rel="stylesheet" href="/css/layout.css">
+    
+    <!-- Places all the css links for the partials or the variable part here -->
+    <%- style %>
 </head>
 <body>
     <%- include('_header'); %>
@@ -14,5 +18,8 @@
     <%- body %>
 
     <%- include('_footer'); %>
+
+    <!-- Places all the script links for the partials or the variable part here -->
+    <%- script %>
 </body>
 </html>
