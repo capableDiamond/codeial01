@@ -8,6 +8,8 @@
         <%= title %>
     </title>
     <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/footer.css">
     
     <!-- Places all the css links for the partials or the variable part here -->
     <%- style %>
@@ -16,7 +18,9 @@
     <%- include('_header'); %>
     
 <!-- this body implies the variable part -->
-    <%- body %>
+    <main id="layout-main">
+        <%- body %>
+    </main>
 
     <%- include('_footer'); %>
 
