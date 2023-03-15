@@ -1,4 +1,5 @@
 const Post = require('../models/post');
+const Comment = require('../models/comments');
 
 module.exports.create = function(req,res){
     Post.create({
@@ -8,5 +9,25 @@ module.exports.create = function(req,res){
     },function(err,post){
         if(err){console.log('Error in creating a post');return;}
         return res.redirect('back');
+    });
+}
+
+module.exports.destroy = function(req,res){
+    Post.findById(req.params.id,function(err,post){
+        //to verify if the user requesting the delete action is the author of the post
+        if(post.user == req.user.id){//using .id instead of _id converts the id into a string so that it can be compared
+            post.remove();
+
+            //deleting the comments on the post
+            //delete all the comments having the post's id
+            Comment.deleteMany({post:req.params.id},function(err){
+                if(err){console.log(err);return;}
+                return res.redirect('back');
+            });
+
+        }else{
+            //TODO error handling warning the user
+            return res.redirect('back');
+        }
     });
 }
