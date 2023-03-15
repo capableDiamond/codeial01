@@ -20,3 +20,27 @@ module.exports.create = function(req,res){
         }
     });
 }
+
+module.exports.destroy = function(req,res){
+    Comment.findById(req.params.id,function(err,comment){
+        if(err){console.log(err);return;}
+        //TODO learn to implement asycn with help of promises
+        let postId = comment.post;
+        let postOwner;
+        Post.findById(postId,function(err,post){
+            postOwner = post.user.toString();
+
+            if(comment.user == req.user.id || req.user.id == postOwner){
+                comment.remove();
+
+                post.update({$pull: {comments:req.params.id}},function(err,post){
+                    return res.redirect('back');
+            });
+            }else{
+                console.log('User not allowed to delete comment');
+                return res.redirect('back');
+            }
+
+        })
+    })
+}
