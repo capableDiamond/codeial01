@@ -36,7 +36,7 @@ module.exports.create = async function(req,res){
             post.save();//whenever we update anything we need to call save after it
             return res.redirect('/');
         }
-    }catch{
+    }catch(err){
         console.log('Error',Error);
         return;
     }
@@ -81,7 +81,7 @@ module.exports.destroy = async function(req,res){
             console.log('User not allowed to delete comment');
             return res.redirect('back');
         }
-    }catch{
+    }catch(err){
         console.log(err);return;
     }
 

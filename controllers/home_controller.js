@@ -22,7 +22,7 @@ module.exports.home = async function(req,res){
             posts:posts,
             all_users:users
         });
-    }catch{
+    }catch(err){
         console.log('Error',err);
         return;
     }

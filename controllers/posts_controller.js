@@ -22,7 +22,7 @@ module.exports.create = async function(req,res){
         )
         return res.redirect('back');
 
-    }catch{
+    }catch(err){
         console.log('Error in creating a post',err);
         return res.redirect('back');
     }
@@ -63,7 +63,7 @@ module.exports.destroy = async function(req,res){
             console.log('User not allowed to delete post');
             return res.redirect('back');
         }
-    }catch{
+    }catch(err){
         console.error();
         console.log('Error in deleting Post');
         return res.redirect('back');
