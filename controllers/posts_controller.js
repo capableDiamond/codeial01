@@ -19,10 +19,22 @@ module.exports.create = async function(req,res){
                 content:req.body.content,
                 user:req.user._id
             }
-        )
+        );
+        
+        if(req.xhr){
+            return res.status(200).json({
+                data:{
+                    post:post
+                },
+                message: 'Post Created!'
+            });
+        }
+
+        req.flash('success','Post Created');
         return res.redirect('back');
 
     }catch(err){
+        req.flash('error','Error in Creating a post!');
         console.log('Error in creating a post',err);
         return res.redirect('back');
     }
@@ -57,15 +69,17 @@ module.exports.destroy = async function(req,res){
     
             Comment.deleteMany({post:req.params.id},function(err){
                 if(err){console.log(err);return;}
+                req.flash('success','Post and associated Comments deleted');
                 return res.redirect('back');
             });
         }else{
-            console.log('User not allowed to delete post');
+            req.flash('error','User unauthorized to delete post');
             return res.redirect('back');
         }
     }catch(err){
-        console.error();
+        console.log(err);
         console.log('Error in deleting Post');
+        req.flash('error','Error in deleteing Post');
         return res.redirect('back');
     }
 }
