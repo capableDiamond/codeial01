@@ -62,13 +62,15 @@ module.exports.create = function(req,res){
 
 //sign in and create a session for the user
 module.exports.createSession = function(req,res){
+    req.flash('success','Logged in Successfuly');//setting the flash messages,this is connected to req though what we are sending back is the response
     return res.redirect('/');
 }
 
 module.exports.destroySession = function(req,res){
     req.logout(function(err){//logout is a function of passport library
         if(err){console.log('Error in Logging out');return;}
-        res.redirect('/');
+        req.flash('success','You have Logged Out!');
+        return res.redirect('/');
     });
 }
 
