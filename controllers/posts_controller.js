@@ -66,19 +66,28 @@ module.exports.destroy = async function(req,res){
 
         if(post.user = req.user.id){
             post.remove();
-    
-            Comment.deleteMany({post:req.params.id},function(err){
-                if(err){console.log(err);return;}
-                req.flash('success','Post and associated Comments deleted');
-                return res.redirect('back');
-            });
+
+            await Comment.deleteMany({post:req.params.id});
+
+            if(req.xhr){
+                return res.status(200).json({
+                    data:{
+                        post_id:req.params.id
+                    },
+                    message: "Post Deleted"
+                });
+            }
+
+            req.flash('success','Post and associated Comments deleted');
+            return res.redirect('back');
+
         }else{
             req.flash('error','User unauthorized to delete post');
             return res.redirect('back');
         }
     }catch(err){
         console.log(err);
-        console.log('Error in deleting Post');
+        console.log('Error in deleting Post at Posts Controller');
         req.flash('error','Error in deleteing Post');
         return res.redirect('back');
     }

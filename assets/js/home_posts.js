@@ -6,7 +6,7 @@
 
         newPostForm.submit(function(e){
             e.preventDefault();
-            //the data to be submitted is within this submit function only had i placed the AJAX request out of it it would have givena blank string to serialize
+            //the data to be submitted is within this submit function only had I placed the AJAX request out of it it would have given a blank string to serialize
             $.ajax({
                 type:'post',
                 url:'/posts/create',
@@ -15,6 +15,8 @@
                     // console.log('Successfuly posted data');
                     let newPost = newPostDom(data.data.post);
                     $('#post-lists-container > ul').prepend(newPost);
+                    //attaching the delete post function to every post that is created
+                    deletePost($(' .delete-post-button', newPost)); //implies this class has to be inside the newPost where newPost is just a variable containing the HTML for new post
                 },
                 error: function(error){
                     console.log(error.responseText);
@@ -40,7 +42,7 @@
             ${post.content} 
             <br>
             <small>
-                by ${post.user.name}
+                by ${post.user.name}<!-- //this does not work as it has not been populated yet -->
             </small>
         </p>
         <div class="post-comments">
@@ -60,8 +62,29 @@
     </li>`
     );
     }
+
+    //Method to delete a post in DOM
+    let deletePost = function(deleteLink){
+        $(deleteLink).click(function(e){
+            e.preventDefault();
+
+            $.ajax({
+                type:'get',
+                url:$(deleteLink).prop('href'),
+                success:function(data){//the data we get back when the request is successfully completed by server
+                    $(`#post-${data.data.post_id}`).remove();
+                },
+                error:function(err){
+                    console.log(err.responseText);
+                }
+            });
+        });
+    }
+
+
+
     createPost();
 
-    //Method to create a post in DOM
+    
 }
 

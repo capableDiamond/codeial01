@@ -5,6 +5,7 @@ module.exports.home = async function(req,res){
     try{
         //first we find all the posts and then we populate all the users in the posts and then we call the callback function
         let posts = await Post.find({})
+        .sort({_id:-1})
         .populate('user')
         .populate(
             {
