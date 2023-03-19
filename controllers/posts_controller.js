@@ -22,6 +22,7 @@ module.exports.create = async function(req,res){
         );
         
         if(req.xhr){
+            post = await post.populate('user','name');
             return res.status(200).json({
                 data:{
                     post:post
@@ -70,6 +71,7 @@ module.exports.destroy = async function(req,res){
             await Comment.deleteMany({post:req.params.id});
 
             if(req.xhr){
+                req.flash('success','Post and associated Comments deleted');
                 return res.status(200).json({
                     data:{
                         post_id:req.params.id

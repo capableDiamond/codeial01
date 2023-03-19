@@ -6,6 +6,7 @@
 
         newPostForm.submit(function(e){
             e.preventDefault();
+            console.log(newPostForm.serialize());
             //the data to be submitted is within this submit function only had I placed the AJAX request out of it it would have given a blank string to serialize
             $.ajax({
                 type:'post',

@@ -9,7 +9,7 @@ module.exports.home = async function(req,res){
         .populate('user')
         .populate(
             {
-            path:'comments', //this comment refers to the comment in the Post model
+            path:'comments',options:{sort:{_id:-1}} ,//this comment refers to the comment in the Post model
             populate:{
                 path:'user' //this user refers to the user in the comments model
             }//multi level populating happens

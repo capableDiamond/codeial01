@@ -26,18 +26,32 @@ module.exports.create = async function(req,res){
         let post = await Post.findById(req.body.post);
         if(post)
         {
+            console.log('sdfgdsga',req.body.content);
             let comment = await Comment.create({
-                content:req.body.content,
-                post:req.body.post,
+                content:req.body.content,//this is comming in form of arr instead of string
+                post:req.body.post,//this is also coming in form of array
                 user:req.user._id
             });
-    
+            
             post.comments.push(comment);
             post.save();//whenever we update anything we need to call save after it
+
+            if(req.xhr){
+                comment = await comment.populate('user','name');
+                comment = await comment.populate('post','user');
+                return res.status(200).json({
+                    data:{
+                        comment:comment
+                    },
+                    message: "Post Created!"
+                });
+            }
+
+            req.flash('success', 'Comment published!');
             return res.redirect('/');
         }
     }catch(err){
-        console.log('Error',Error);
+        console.log('Error in Comments Controller',err);
         return;
     }
 
@@ -86,3 +100,4 @@ module.exports.destroy = async function(req,res){
     }
 
 }
+
