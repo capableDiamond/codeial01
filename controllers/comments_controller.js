@@ -26,10 +26,9 @@ module.exports.create = async function(req,res){
         let post = await Post.findById(req.body.post);
         if(post)
         {
-            console.log('sdfgdsga',req.body.content);
             let comment = await Comment.create({
-                content:req.body.content,//this is comming in form of arr instead of string
-                post:req.body.post,//this is also coming in form of array
+                content:req.body.content,
+                post:req.body.post,
                 user:req.user._id
             });
             
@@ -84,12 +83,23 @@ module.exports.create = async function(req,res){
 module.exports.destroy = async function(req,res){
     try{
         let comment = await Comment.findById(req.params.id);
-        let post = await Post.findById(comment.post);
+        let post = await Post.findById(comment.post.toString());
+        // console.log('post object in comments controller',post);
         let postOwner = post.user.toString();
     
         if(comment.user == req.user.id || req.user.id == postOwner){
             comment.remove();
             let x = await post.update({$pull: {comments:req.params.id}});
+
+            if(req.xhr){
+                return res.status(200).json({
+                    data:{
+                        commentId:req.params.id
+                    },
+                    message:"Comment Deleted"
+                });
+            }
+
             return res.redirect('back');
         }else{
             console.log('User not allowed to delete comment');

@@ -1,23 +1,34 @@
 //this is the js file that fetches the data from the form and submits it to the server in JSON Format
 //method to submit the form data using AJAX
-{
+{  
     let createPost = function(){
         let newPostForm = $('#new-post-form');
 
         newPostForm.submit(function(e){
             e.preventDefault();
-            console.log(newPostForm.serialize());
+
             //the data to be submitted is within this submit function only had I placed the AJAX request out of it it would have given a blank string to serialize
             $.ajax({
                 type:'post',
                 url:'/posts/create',
-                data: newPostForm.serialize(), //this converts the form data into JSON
+                //this converts the form data into JSON
+                data: newPostForm.serialize(), 
                 success:function(data){
-                    // console.log('Successfuly posted data');
+        
                     let newPost = newPostDom(data.data.post);
                     $('#post-lists-container > ul').prepend(newPost);
+
                     //attaching the delete post function to every post that is created
-                    deletePost($(' .delete-post-button', newPost)); //implies this class has to be inside the newPost where newPost is just a variable containing the HTML for new post
+                    //implies this class has to be inside the newPost where newPost is just a variable containing the HTML for new post
+                    deletePost($(' .delete-post-button', newPost)); 
+
+                    //also attach the comment-form AJAX Code 
+                    let postCommentForm = $(`#comment-form-${data.data.post._id}`).submit(function(e){
+                        e.preventDefault();
+                        handleCommentCreation(e,newPost);
+
+                    });
+
                 },
                 error: function(error){
                     console.log(error.responseText);
@@ -48,7 +59,7 @@
         </p>
         <div class="post-comments">
             
-            <form action="/comments/create" method="post">
+            <form action="/comments/create" method="post" class='comment-form' id='comment-form-${post._id}'>
                 <input type="text" name="content" placeholder="Type Here to add Comment ..." required>
                 <input type="hidden" name="post" value="${post._id}">
                 <input type="submit" value="Add Comment">
@@ -82,10 +93,67 @@
         });
     }
 
-
-
     createPost();
 
+    //Function for comments on the post
+    function handleCommentCreation(e,newPost){
+        console.log('called handle comment creation in home_posts in assets/js');
+        // e.preventDefault();
+        $.ajax({
+            type:'post',
+            url:'/comments/create',
+            data: $(e.target).serialize(),//e.target refers to the comment form attached to the post on which comment is being made
+            success:function(data){//this data has been populated with User's Name
+
+                let newComment = newCommentDom(data.data.comment);
+                $(' .post-comments-list',newPost).prepend(newComment);
+
+                //attaching the delete function to the comment
+                handleCommentDeletion($(`#delete-button-${data.data.comment._id}`));
+
+            },
+            error:function(error){
+                console.log(error.responseText);
+            }
+        });
+    }
+    //create the comment html
+    let newCommentDom = function(comment){
+        return $
+        (
+            `<li id='comment-${comment._id}'>
+                <p>
+                    <a href="/comments/destroy/${comment._id}" class='delete-comment-button' id="delete-button-${comment._id}">X</a>
+                    ${comment.content}
+                    <br>
+                    <small>
+                        ${comment.user.name}
+                    </small>
+                </p>
+            </li>`
+        )
+    }
     
+    //function to handle comment deletion dynamically
+function handleCommentDeletion(deleteLink){
+    
+    $(deleteLink).click(function(e){
+        e.preventDefault();
+
+        $.ajax({
+            type:'get',
+            url:$(deleteLink).prop('href'),
+            success:function(data){
+                $(`comment-${data.data.commentId}`).remove();
+            },
+            error:function(err){
+                console.log(err.responseText);
+            }
+        });
+
+    });    
+    
+}
+
 }
 
