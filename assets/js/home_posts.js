@@ -14,8 +14,10 @@
                 //this converts the form data into JSON
                 data: newPostForm.serialize(), 
                 success:function(data){
-        
+                    //creating the html for the new post
                     let newPost = newPostDom(data.data.post);
+
+                    //appending the html to the posts list
                     $('#post-lists-container > ul').prepend(newPost);
 
                     //attaching the delete post function to every post that is created
@@ -23,11 +25,20 @@
                     deletePost($(' .delete-post-button', newPost)); 
 
                     //also attach the comment-form AJAX Code 
-                    let postCommentForm = $(`#comment-form-${data.data.post._id}`).submit(function(e){
+                    $(`#comment-form-${data.data.post._id}`).submit(function(e){
                         e.preventDefault();
                         handleCommentCreation(e,newPost);
-
                     });
+
+                    //Noty notifications
+                    new Noty({
+                        theme: 'relax',
+                        text: "Post Created",
+                        type: 'success',
+                        layout: 'topRight',
+                        timeout: 1500
+                        
+                    }).show();
 
                 },
                 error: function(error){
@@ -85,6 +96,14 @@
                 url:$(deleteLink).prop('href'),
                 success:function(data){//the data we get back when the request is successfully completed by server
                     $(`#post-${data.data.post_id}`).remove();
+                    new Noty({
+                        theme: 'relax',
+                        text: "Post Deleted",
+                        type: 'success',
+                        layout: 'topRight',
+                        timeout: 1500
+                        
+                    }).show();
                 },
                 error:function(err){
                     console.log(err.responseText);
@@ -97,8 +116,6 @@
 
     //Function for comments on the post
     function handleCommentCreation(e,newPost){
-        console.log('called handle comment creation in home_posts in assets/js');
-        // e.preventDefault();
         $.ajax({
             type:'post',
             url:'/comments/create',
@@ -139,12 +156,11 @@ function handleCommentDeletion(deleteLink){
     
     $(deleteLink).click(function(e){
         e.preventDefault();
-
         $.ajax({
             type:'get',
             url:$(deleteLink).prop('href'),
             success:function(data){
-                $(`comment-${data.data.commentId}`).remove();
+                $(`#comment-${data.data.commentId}`).remove();
             },
             error:function(err){
                 console.log(err.responseText);

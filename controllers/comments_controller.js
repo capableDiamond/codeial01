@@ -84,7 +84,6 @@ module.exports.destroy = async function(req,res){
     try{
         let comment = await Comment.findById(req.params.id);
         let post = await Post.findById(comment.post.toString());
-        // console.log('post object in comments controller',post);
         let postOwner = post.user.toString();
     
         if(comment.user == req.user.id || req.user.id == postOwner){

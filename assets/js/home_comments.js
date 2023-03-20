@@ -21,6 +21,14 @@ function handleCommentCreation(e){
 
             //attaching the delete function to the comment
             handleCommentDeletion($(`#delete-button-${data.data.comment._id}`));
+            new Noty({
+                theme: 'relax',
+                text: "Comment Published",
+                type: 'success',
+                layout: 'topRight',
+                timeout: 1500
+                
+            }).show();
 
         },
         error:function(error){
@@ -48,7 +56,6 @@ let newCommentDom = function(comment){
 
 //function to handle comment deletion dynamically
 function handleCommentDeletion(deleteLink){
-    
     $(deleteLink).click(function(e){
         e.preventDefault();
 
@@ -56,7 +63,16 @@ function handleCommentDeletion(deleteLink){
             type:'get',
             url:$(deleteLink).prop('href'),
             success:function(data){
+                console.log('success');
                 $(`#comment-${data.data.commentId}`).remove();
+                new Noty({
+                    theme: 'relax',
+                    text: "Comment Deleted",
+                    type: 'success',
+                    layout: 'topRight',
+                    timeout: 1500
+                    
+                }).show();
             },
             error:function(err){
                 console.log(err.responseText);
