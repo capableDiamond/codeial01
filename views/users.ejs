@@ -3,16 +3,21 @@
     Codeial <%= title %>
 </h1>
 
+<img src="<%= user.avatar %>" alt="<%= user.name %>" width="100">
 
 
 <% if(user.id == profile_user.id){ %>
 <!-- if user matches then show the form -->
-    <form action="/users/update/<%= profile_user.id %>" method="post">
-        <input type="text" name="name" placeholder="Your Name" required>
-        <input type="email" name="email" placeholder="Your Email" required>
-        <input type="submit" value="Update">
+    <form action="/users/update/<%= profile_user.id %>" method="post" enctype="multipart/form-data">
+        <input type="text" id="update-user-name" name="name" placeholder="Your Name" value="<%= user.name %>"required>
+        <input type="email" id="update-user-email" name="email" placeholder="Your Email" value="<%= user.email %>"required>
+        <input type="file" id="update-user-avatar" name="avatar" placeholder="Profile Picture" accept="image/*">
+        <div id="image-preview"></div>
+        <input type="submit" id="update-user-submit-button" value="Update" disabled>
     </form>
 <% }else{ %>
     <p><%= profile_user.name %></p>
     <p><%= profile_user.email %></p>
 <% } %>
+
+<script src="/js/user_profile.js"></script>

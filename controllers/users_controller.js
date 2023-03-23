@@ -1,5 +1,12 @@
 const User = require('../models/user');
 
+//require the file system to delete the previous avatar images
+const fs = require('fs');
+const path = require('path');
+
+const fileType = require('file-type');
+
+
 module.exports.profile = function(req,res){
     User.findById(req.params.id,function(err,user){
         return res.render('users',{
@@ -74,13 +81,80 @@ module.exports.destroySession = function(req,res){
     });
 }
 
-module.exports.update = function(req,res){
+module.exports.update = async function(req,res){
     //to check if the info of the logged in user is being changed and not of other user
+    // if(req.user.id == req.params.id){
+    //     User.findByIdAndUpdate(req.params.id,req.body,function(err,user){
+    //         req.flash('success','Updated!');
+    //         return res.redirect('back');
+    //     });
+    // }else{
+    //     req.flash('error','Unauthorized');
+    //     return res.status(401).send('Unauthorized');
+    // }
+    const whitelist = [
+        'image/png',
+        'image/jpeg',
+        'image/jpg',
+        'image/webp'
+    ];
+
     if(req.user.id == req.params.id){
-        User.findByIdAndUpdate(req.params.id,req.body,function(err,user){
+        try{
+            let user = await User.findById(req.params.id);
+            //used to parse the req part
+            User.uploadedAvatar(req,res,async function(err){
+                if(err){
+                    console.log('**Multer Error: in Users Controller: ',err);
+                }
+                user.name = req.body.name;
+                user.email = req.body.email;
+
+                if(req.file){
+                    //using file type library to identify file type
+                    const meta = await fileType.fromFile(req.file.path);
+                    console.log(meta);
+                    if(whitelist.includes(meta.mime)){
+
+                        //if an avatar already exists,it deletes it before setting path to the new avatar
+                        if(user.avatar){
+                            let currentAvatar = user.avatar;
+                            let fileExists = true;
+                            //if user has an avatar but the file got deleted somehow
+                            fs.access(path.join(__dirname,'..',user.avatar),fs.constants.F_OK,(err)=>{
+                                if(err){
+                                    fileExists = false;
+                                }
+                                if(fileExists){
+                                    fs.unlinkSync(path.join(__dirname,'..',currentAvatar));
+                                }
+                            });   
+                        }
+
+                        //this is saving the path of the uploaded file into the avatar field of the user Model
+                        user.avatar = User.avatarPath + '/' + req.file.filename;
+                    }else{
+                        //delete the file from the server
+                        let pathOfFileToDelete = path.join(__dirname,'..',User.avatarPath + '/' + req.file.filename);
+                        fs.unlinkSync(pathOfFileToDelete);
+                        req.flash('error','Wrong file type');
+                        return res.redirect('back');
+                    }
+
+                }
+                //user.save is kept outside file handling block so that name or email changes also get implemented
+                user.save();
+                return res.redirect('back');
+            });
+
+        }catch(err){
+            console.log('Error in Users Controller');
+            req.flash('error',err);
+            console.log('Error: ',err);
             return res.redirect('back');
-        });
+        }
     }else{
+        req.flash('error','Unauthorized');
         return res.status(401).send('Unauthorized');
     }
 }
