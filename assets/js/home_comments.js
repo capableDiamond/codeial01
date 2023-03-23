@@ -1,6 +1,7 @@
 
 let createCommentForm = $('.comment-form');//returns an array of all the comment forms
 
+//listener could have been added at time of post creation also
 for(i of createCommentForm){
     i.addEventListener('submit',(e)=>{
         handleCommentCreation(e);

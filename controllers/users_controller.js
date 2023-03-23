@@ -82,7 +82,7 @@ module.exports.destroySession = function(req,res){
 }
 
 module.exports.update = async function(req,res){
-    //to check if the info of the logged in user is being changed and not of other user
+    
     // if(req.user.id == req.params.id){
     //     User.findByIdAndUpdate(req.params.id,req.body,function(err,user){
     //         req.flash('success','Updated!');
@@ -98,7 +98,7 @@ module.exports.update = async function(req,res){
         'image/jpg',
         'image/webp'
     ];
-
+    //to check if the info of the logged in user is being changed and not of other user
     if(req.user.id == req.params.id){
         try{
             let user = await User.findById(req.params.id);
@@ -110,10 +110,12 @@ module.exports.update = async function(req,res){
                 user.name = req.body.name;
                 user.email = req.body.email;
 
+                //if avatar update is also demanded by the user
                 if(req.file){
+                    
                     //using file type library to identify file type
                     const meta = await fileType.fromFile(req.file.path);
-                    console.log(meta);
+
                     if(whitelist.includes(meta.mime)){
 
                         //if an avatar already exists,it deletes it before setting path to the new avatar
@@ -144,6 +146,20 @@ module.exports.update = async function(req,res){
                 }
                 //user.save is kept outside file handling block so that name or email changes also get implemented
                 user.save();
+
+                //handling th ajax request
+                if(req.xhr){
+                    return res.status(200).json({
+                        data:{
+                            user:{
+                                name:user.name,
+                                email:user.email,
+                                avatar:user.avatar
+                            }
+                        },
+                        message:"User Updated!"
+                    });
+                }
                 return res.redirect('back');
             });
 

@@ -3,12 +3,12 @@
     Codeial <%= title %>
 </h1>
 
-<img src="<%= user.avatar %>" alt="<%= user.name %>" width="100">
+<img src="<%= user.avatar %>" alt="<%= user.name %>" width="100" id="user-avatar">
 
 
 <% if(user.id == profile_user.id){ %>
 <!-- if user matches then show the form -->
-    <form action="/users/update/<%= profile_user.id %>" method="post" enctype="multipart/form-data">
+    <form action="/users/update/<%= profile_user.id %>" method="post" enctype="multipart/form-data" id="user-update-form">
         <input type="text" id="update-user-name" name="name" placeholder="Your Name" value="<%= user.name %>"required>
         <input type="email" id="update-user-email" name="email" placeholder="Your Email" value="<%= user.email %>"required>
         <input type="file" id="update-user-avatar" name="avatar" placeholder="Profile Picture" accept="image/*">

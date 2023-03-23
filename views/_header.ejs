@@ -2,7 +2,7 @@
     <h1>codeial.</h1>
     <ul>
         <% if(locals.user){ %>
-            <li class = 'first'>Hi, <%= user.name %></li>
+            <li class = 'first' id="greeting">Hi, <%= user.name %></li>
             <li>
                 <a href="/users/sign-out">Sign Out</a>
             </li>
