@@ -1,6 +1,8 @@
 const Comment = require('../models/comments');
 const Post = require('../models/post');
 
+const commentsMailer = require('../mailers/comments_mailer');
+
 // module.exports.create = function(req,res){
 //     Post.findById(req.body.post,function(err,post){
 //         if(err){console.log('error in finding the post for adding comment');return;}
@@ -35,9 +37,11 @@ module.exports.create = async function(req,res){
             post.comments.push(comment);
             post.save();//whenever we update anything we need to call save after it
 
+            comment = await comment.populate('user','name email');
+            comment = await comment.populate('post','user');
+            commentsMailer.newComment(comment);
             if(req.xhr){
-                comment = await comment.populate('user','name');
-                comment = await comment.populate('post','user');
+
                 return res.status(200).json({
                     data:{
                         comment:comment
