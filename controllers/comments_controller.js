@@ -2,6 +2,10 @@ const Comment = require('../models/comments');
 const Post = require('../models/post');
 
 const commentsMailer = require('../mailers/comments_mailer');
+const queue = require('../config/kue');
+
+//the worker which is going to send the email
+const commentEmailWorker = require('../workers/comment_email_worker');
 
 // module.exports.create = function(req,res){
 //     Post.findById(req.body.post,function(err,post){
@@ -39,7 +43,19 @@ module.exports.create = async function(req,res){
 
             comment = await comment.populate('user','name email');
             comment = await comment.populate('post','user');
-            commentsMailer.newComment(comment);
+            // commentsMailer.newComment(comment);
+
+            /*  we pass the function to the que 
+                every task that we put into the queue is a job
+                with this function we are putting a new job inside the queue
+                if the queue does not exists a new queue will be created or if it exists it will just push the job
+            */
+            let job = queue.create('emails',comment).save(function(err){
+                if(err){console.log('error in sending to the queue',err);return;}
+
+                console.log('job enqueued',job.id);
+            });
+
             if(req.xhr){
 
                 return res.status(200).json({
