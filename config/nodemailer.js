@@ -29,11 +29,11 @@ let transporter = nodemailer.createTransport({
 });
 
 //it defines,whenever i am going to send an HTML email, where the files would be placed inside views
-let renderTemplate = (data,relativePath)=>{
+let renderCommentTemplate = (data,relativePath)=>{
     let mailHTML;
     ejs.renderFile(
         path.join(__dirname,'../views/mailers',relativePath),//relative path is the place from where this function is being called
-        data,//contect that we pass to ejs
+        data,//context that we pass to ejs
         function(err,template){
             if(err){console.log('error in rendering template',err);return;}
             mailHTML = template;
@@ -42,7 +42,21 @@ let renderTemplate = (data,relativePath)=>{
     return mailHTML;
 }
 
+let renderForgotPasswordTemplate = (data,relativePath) => {
+    let mailHTML;
+    ejs.renderFile(
+        path.join(__dirname,'../views/mailers',relativePath),
+        data,
+        (err,template)=>{
+            if(err){console.log('error in rendering forgot password template',err);return;}
+            mailHTML = template;
+        }
+    )
+    return mailHTML;
+}
+
 module.exports ={
     transporter:transporter,
-    renderTemplate:renderTemplate
+    renderCommentTemplate:renderCommentTemplate,
+    renderForgotPasswordTemplate:renderForgotPasswordTemplate
 }

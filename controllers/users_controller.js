@@ -1,10 +1,14 @@
 const User = require('../models/user');
+const ResetPasswordToken = require('../models/resetPasswordToken');
+const crypto = require('crypto');
+const resetPasswordMailer = require('../mailers/reset_password_mailer');
 
 //require the file system to delete the previous avatar images
 const fs = require('fs');
 const path = require('path');
 
 const fileType = require('file-type');
+const { model } = require('mongoose');
 
 
 module.exports.profile = function(req,res){
@@ -173,4 +177,130 @@ module.exports.update = async function(req,res){
         req.flash('error','Unauthorized');
         return res.status(401).send('Unauthorized');
     }
+}
+
+//forgot password 
+module.exports.forgotPassword = function(req,res){
+    return res.render('forgot-password');
+}
+
+//reset password initiate request
+module.exports.resetPasswordInitiate = async function(req,res){
+    try{
+        //check if user exists for the given email
+        let user = await User.findOne({email:req.body.email});
+
+        // if no such user exists
+        if(!user){
+            req.flash('error','Invalid Email');
+            return res.redirect('/');
+        }
+        
+        //if user exists then
+        //create an object called resetPasswordToken in the schema
+        let token = await ResetPasswordToken.create({
+            accessToken:crypto.randomBytes(20).toString('hex'),
+            user:user.id,
+            isValid:true
+        });
+
+        console.log('Token Created');
+
+        //Populate the token with the details necessary to send the email
+        await token.populate('user','email name');
+
+        //send an email to the user with a reset password link
+        //pass the token object as data to the email function
+        resetPasswordMailer.resetPasswordMail(token);
+
+        //send the user a flash to check his email and proceed the journey from there
+        req.flash('success','Check your email for reset password link');
+        return res.redirect('/');
+    }
+    catch(err){
+        console.log(err);
+        return res.redirect('back');
+    }
+}
+
+module.exports.resetPassword = async function(req,res){
+    try{    
+        //see if the access token is valid
+        let token = await ResetPasswordToken.findOne({accessToken:req.params.accessToken});
+
+        //if the token is valid send the user to the reset password page
+        if(token){
+            if(token.isValid){
+                return res.render('reset-password',{token:token});
+            }else{
+                req.flash('error','Link to reset password expired');
+                return res.redirect('/users/sign-in');
+            }
+        }else{
+            req.flash('error','Link to reset password expired');
+            return res.redirect('/users/sign-in');
+        }
+    }catch(err){
+        console.log(err);
+        return res.redirect('back');
+    }
+
+    
+}
+
+//finally change the password post the verification checks
+//also delete the token post the password has been changed
+module.exports.changePassword = async function(req,res){
+    let match = false;
+
+    try{
+
+        //confirm if passwords match
+        if(req.body.password == req.body.confirm_password){
+            match = true;
+        }else{
+            req.flash('error','passwords do not match');
+            return res.redirect('back');
+        }
+
+        //check if token is valid
+        let token = await ResetPasswordToken.findById(req.body.token);
+        if(token && match){
+
+            //putting isValid check inside coz in absence of the token reading the value of undefined would have thrown an error
+            if(token.isValid){
+                //fetch user
+                let user = await User.findById(token.user);
+
+                //update user's password
+                user.password = req.body.password;
+                user.save();
+
+                //make token invalid -> this is an extra check in case an error occurs in deleting the token
+                token.isValid = false;
+                token.save();
+
+                //delete token
+                await token.remove();
+
+                //deliver success message
+                req.flash('success','Password reset successful');
+
+                //redirect user to sign in page
+                res.redirect('/users/sign-in');
+
+            }else{
+                req.flash('error','Link to reset password expired');
+                return res.redirect('/users/sign-in');
+            }
+        }else{
+            req.flash('error','Link to reset password expired');
+            return res.redirect('/users/sign-in');
+        }
+
+    }catch(err){
+        console.log(err);
+        return res.redirect('back');
+    }
+
 }

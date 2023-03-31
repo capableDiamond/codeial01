@@ -5,7 +5,7 @@ const nodeMailer = require('../config/nodemailer');
 //gets called in the comments controller
 exports.newComment = (comment) => {
     //fetch the HTML of the email
-    let htmlString = nodeMailer.renderTemplate({comment:comment},'/comments/new_comment.ejs');
+    let htmlString = nodeMailer.renderCommentTemplate({comment:comment},'/comments/new_comment.ejs');
 
     nodeMailer.transporter.sendMail({
         from:process.env.MAIL_USERNAME,

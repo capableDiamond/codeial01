@@ -7,6 +7,9 @@ const db = require('./config/mongoose');
 //used for session cookie
 const session = require('express-session');
 const passport = require('passport');
+//setting up the values of env variables to the process object in node using dotenv package
+//loading it above oAuth so that the variables get defined before they are requested in the auth configs
+require('dotenv').config();
 const passportLocal = require('./config/passport-local-strategy');
 const passportJWT = require('./config/passport-jwt-strategy');
 const passportGoogle = require('./config/passport-google-oauth2-strategy');
@@ -14,8 +17,7 @@ const MongoStore = require('connect-mongo')(session);
 const sassMiddleware = require('node-sass-middleware');
 const flash = require('connect-flash');
 const customMware = require('./config/middleware');
-//setting up the values of env variables to the process object in node using dotenv package
-require('dotenv').config();
+
 
 app.use(sassMiddleware({
     src: './assets/scss',

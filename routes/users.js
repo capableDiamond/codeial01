@@ -12,6 +12,12 @@ router.get('/sign-up',usersController.signUp);
 
 router.get('/sign-in',usersController.signIn);
 
+router.get('/forgot-password',usersController.forgotPassword);
+
+router.post('/reset-password-initiate',usersController.resetPasswordInitiate);
+router.get('/reset-password/:accessToken',usersController.resetPassword);
+router.post('/reset-password',usersController.changePassword);
+
 router.post('/create',usersController.create);
 
 //use passport as a middleware to authenticate
