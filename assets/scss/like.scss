@@ -1,0 +1,11 @@
+.like{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    p{
+        &:first-child{
+            margin-right: 1em;
+        }   
+    }
+}

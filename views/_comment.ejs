@@ -10,4 +10,7 @@
             <%= comment.user.name %>
         </small>
     </p>
+    <% if(locals.user){ %>
+        <%- include('_likeForComment') -%>
+    <% } %>
 </li>

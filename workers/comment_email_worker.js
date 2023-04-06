@@ -14,7 +14,7 @@ there are two things
 //this is a worker
 //this worker is going to send emails for us rather than us sending it via a controller
 queue.process('emails',function(job,done){
-    console.log('emails worker is processing a job');
+    // console.log('emails worker is processing a job');
     commentsMailer.newComment(job.data);
     done();
 });

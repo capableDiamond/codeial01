@@ -1,5 +1,6 @@
 const Comment = require('../models/comments');
 const Post = require('../models/post');
+const Like = require('../models/like');
 
 const commentsMailer = require('../mailers/comments_mailer');
 const queue = require('../config/kue');
@@ -41,8 +42,21 @@ module.exports.create = async function(req,res){
             post.comments.push(comment);
             post.save();//whenever we update anything we need to call save after it
 
-            comment = await comment.populate('user','name email');
-            comment = await comment.populate('post','user');
+            // comment = await comment.populate('user','name email');
+            // comment = await comment.populate('post','user');
+            comment = await comment.populate([
+                {
+                    path:'user',
+                    select:'name email'
+                },
+                {
+                    path:'post',
+                    select:'user'
+                },
+                {
+                    path:'likes',
+                }
+            ]);
             // commentsMailer.newComment(comment);
 
             /*  we pass the function to the que 
@@ -53,7 +67,7 @@ module.exports.create = async function(req,res){
             let job = queue.create('emails',comment).save(function(err){
                 if(err){console.log('error in sending to the queue',err);return;}
 
-                console.log('job enqueued',job.id);
+                // console.log('job enqueued',job.id);
             });
 
             if(req.xhr){
@@ -107,9 +121,15 @@ module.exports.destroy = async function(req,res){
         let postOwner = post.user.toString();
     
         if(comment.user == req.user.id || req.user.id == postOwner){
+            //delete the comment from the db
             comment.remove();
-            let x = await post.update({$pull: {comments:req.params.id}});
 
+            //remove the reference of this comment from the post on which the comment was made
+            await post.update({$pull: {comments:req.params.id}});
+
+            //delete all the likes pertaining to this comment
+            await Like.deleteMany({likeable:req.params.id});
+            
             if(req.xhr){
                 return res.status(200).json({
                     data:{

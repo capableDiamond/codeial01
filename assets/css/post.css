@@ -1,0 +1,9 @@
+.post {
+  border: 1px solid black;
+  margin-bottom: 1rem;
+}
+
+.post .post-comments-list {
+  border: 1px solid black;
+  margin: 1rem 25% 1rem 25%;
+}

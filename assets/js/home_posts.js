@@ -30,6 +30,11 @@
                         handleCommentCreation(e,newPost);
                     });
 
+                    //add the like functionality also
+                    $(`#like-post-${data.data.post._id}`).click(function(e){
+                        handleLike(e);
+                    });
+
                     //Noty notifications
                     new Noty({
                         theme: 'relax',
@@ -56,7 +61,7 @@
     let newPostDom = function(post){
         //the html we are returning we have removed a lot of checks given the fact this code is sent when the user has called the post create implying he is signed in
         return $(
-        `<li id="post-${post._id}">
+        `<li id="post-${post._id}" class="post">
         <p>
             <small>
                 <a class="delete-post-button" href="/posts/destroy/${post._id}">X</a>
@@ -68,6 +73,15 @@
                 by ${post.user.name}<!-- //this does not work as it has not been populated yet -->
             </small>
         </p>
+
+        <div class="like" id="like-post-${post._id}">
+            <p>${post.likes.length}</p>
+            <a href="/likes/toggle/?id=${post._id}&type=Post" class="like-link">
+                <i class="fa-regular fa-heart" style="color: #000000;"></i>
+                Like
+            </a>
+        </div>
+
         <div class="post-comments">
             
             <form action="/comments/create" method="post" class='comment-form' id='comment-form-${post._id}'>
@@ -128,12 +142,18 @@
                 //attaching the delete function to the comment
                 handleCommentDeletion($(`#delete-button-${data.data.comment._id}`));
 
+                //attaching the like functionality
+                $(`#like-comment-${data.data.comment._id}`).click(function(e){
+                    handleLike(e);
+                });
+
             },
             error:function(error){
                 console.log(error.responseText);
             }
         });
     }
+    
     //create the comment html
     let newCommentDom = function(comment){
         return $
@@ -147,6 +167,14 @@
                         ${comment.user.name}
                     </small>
                 </p>
+                <div class="like" id="like-comment-${comment._id}">
+                    <p>${comment.likes.length}</p>
+                    <a href="/likes/toggle/?id=${comment._id}&type=Comment" class="like-link">
+                        <!-- check for post id in liked by user to see if the post has been liked by user -->
+                        <i class="fa-regular fa-heart" style="color: #000000;"></i>
+                        Like
+                    </a>
+                </div>
             </li>`
         )
     }
@@ -169,6 +197,40 @@ function handleCommentDeletion(deleteLink){
 
     });    
     
+}
+
+function handleLike(e){
+    console.log('handled');
+    e.preventDefault();
+    
+    $.ajax({
+        type:'get',
+        url:e.target.href,
+        success:function(data){
+            //fetch type of likeable
+            let type = e.target.href.split('=').pop().toLowerCase();
+
+            //fetch post id fron url
+            let id = e.target.href.split('=')[1];
+            id = id.split('&')[0];
+
+            if(data.data.deleted){
+                //fetching the count of likes element and altering its inner html
+                $(`#like-${type}-${id} p`).html(data.data.length);
+                
+                //change colour of the like symbol
+                $(`#like-${type}-${id} a i`).toggleClass('fa-solid fa-regular');
+                $(`#like-${type}-${id} a i`).css('color','#000000');
+            }else{
+                //fetching the count of likes element and altering its inner html
+                $(`#like-${type}-${id} p`).html(data.data.length);
+
+                //change colour of the like symbol
+                $(`#like-${type}-${id} a i`).toggleClass('fa-regular fa-solid');
+                $(`#like-${type}-${id} a i`).css('color','#ff0000');
+            }
+        }
+    });
 }
 
 }

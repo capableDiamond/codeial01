@@ -22,6 +22,12 @@ function handleCommentCreation(e){
 
             //attaching the delete function to the comment
             handleCommentDeletion($(`#delete-button-${data.data.comment._id}`));
+
+            //attaching the like function to the comment
+            $(`#like-comment-${comment._id}`).click(function(e){
+                handleLike(e);
+            });
+
             new Noty({
                 theme: 'relax',
                 text: "Comment Published",
@@ -50,6 +56,14 @@ let newCommentDom = function(comment){
                     ${comment.user.name}
                 </small>
             </p>
+            <div class="like" id="like-comment-${comment._id}">
+                <p>${comment.likes.length}</p>
+                <a href="/likes/toggle/?id=${comment._id}&type=Comment" class="like-link">
+                    <!-- check for post id in liked by user to see if the post has been liked by user -->
+                    <i class="fa-regular fa-heart" style="color: #000000;"></i>
+                    Like
+                </a>
+            </div>
         </li>`
         )
     
@@ -64,7 +78,7 @@ function handleCommentDeletion(deleteLink){
             type:'get',
             url:$(deleteLink).prop('href'),
             success:function(data){
-                console.log('success');
+                
                 $(`#comment-${data.data.commentId}`).remove();
                 new Noty({
                     theme: 'relax',
@@ -82,4 +96,37 @@ function handleCommentDeletion(deleteLink){
 
     });    
     
+}
+
+function handleLike(e){
+    e.preventDefault();
+    
+    $.ajax({
+        type:'get',
+        url:e.target.href,
+        success:function(data){
+            //fetch type of likeable
+            let type = e.target.href.split('=').pop().toLowerCase();
+
+            //fetch post id fron url
+            let id = e.target.href.split('=')[1];
+            id = id.split('&')[0];
+
+            if(data.data.deleted){
+                //fetching the count of likes element and altering its inner html
+                $(`#like-${type}-${id} p`).html(data.data.length);
+                
+                //change colour of the like symbol
+                $(`#like-${type}-${id} a i`).toggleClass('fa-solid fa-regular');
+                $(`#like-${type}-${id} a i`).css('color','#000000');
+            }else{
+                //fetching the count of likes element and altering its inner html
+                $(`#like-${type}-${id} p`).html(data.data.length);
+
+                //change colour of the like symbol
+                $(`#like-${type}-${id} a i`).toggleClass('fa-regular fa-solid');
+                $(`#like-${type}-${id} a i`).css('color','#ff0000');
+            }
+        }
+    });
 }

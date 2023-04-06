@@ -1,6 +1,6 @@
 body{
     margin: 0;
     #layout-main{
-        height: 100vh;
+        min-height: 100vh;// so that the footer sticks to the bottom even when there are less posts
     }
 }
