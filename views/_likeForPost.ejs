@@ -5,20 +5,21 @@
         
         <!-- check for post id in liked by user to see if the post has been liked by user -->
         <!-- also handle the case when it does not enters the above loop ,that is nothing has been liked by user yet-->
-        <% var liked = false; %>
+        <% var likeAdded = false; %>
 
         <% if(likedByUser.length == 0){%>
             <i class="fa-regular fa-heart" style="color: #000000;"></i>
+            <% likeAdded = true %>
         <% }else{ %>
             <% for(i of likedByUser){ %>
-                <% if(i.likeable.toString() == comment._id){ %>
+                <% if(i.likeable.toString() == post._id){ %>
                     <i class="fa-solid fa-heart" style="color: #ff0000;"></i>
-                    <% liked = true; %>
+                    <% likeAdded = true; %>
                     <% break; %>
                 <% } %>
             <% } %>
         <% } %>
-            <% if(!liked){ %>
+            <% if(!likeAdded){ %>
                 <i class="fa-regular fa-heart" style="color: #000000;"></i> 
             <% } %>
         Like

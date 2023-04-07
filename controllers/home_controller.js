@@ -3,28 +3,11 @@ const User = require('../models/user');
 const Comment = require('../models/comments');
 const Like = require('../models/like');
 
+//require this file whenever we make some change in a schema to update the previous object instances with the changes
+// const changes = require('./refresh');
+
 module.exports.home = async function(req,res){
     try{
-        //Ran this block of code just once to include likes field in all old posts
-        // Post.updateMany({},{$set:{likes:[]}},function(err,docs){
-        //     if (err){
-        //         console.log(err)
-        //     }
-        //     else{
-        //         console.log("Updated Docs : ", docs);
-        //     }
-        // });
-
-        //Update old comments for likes arr
-        // Comment.updateMany({},{$set:{likes:[]}},function(err,docs){
-        //     if (err){
-        //         console.log(err)
-        //     }
-        //     else{
-        //         console.log("Updated Docs : ", docs);
-        //     }
-        // });
-
         //first we find all the posts and then we populate all the users in the posts and then we call the callback function
         // let posts = await Post.find({})
         // .sort({_id:-1})
@@ -66,16 +49,19 @@ module.exports.home = async function(req,res){
         ]);
 
         let users = await User.find({});
+        
 
         //see if the page is being accessed by a signed in user or a non signed in user
         if(req.user){
+            let currentUsersFriends = await User.findById(req.user._id).populate('friendships');
             //fetch info of all things liked by user
-            let likedByUser = await Like.find({user:req.user._id}).populate('user');
+            let likedByUser = await Like.find({user:req.user._id}).populate({path:'user',select:'name'});
             return res.render('home',{
                 title:"Codeial | Home",
                 posts:posts,
                 all_users:users,
-                likedByUser:likedByUser
+                likedByUser:likedByUser,
+                currentUsersFriends:currentUsersFriends
             });
         }
 

@@ -18,16 +18,43 @@
         </div>
     </section>
     
-    <section id="user-friends">
-        <h4>Friends</h4>
-        <% for(u of all_users){ %>
-            <p>
-                <a href="/users/profile/<%= u.id %>">
-                    <%= u.name %>
-                </a>
-            </p>
+    <div id="aside">
+        <% if(locals.user){ %>
+            <section id="users">
+                <h4>Users</h4>
+                <% for(u of all_users){ %>
+                    <!-- The logged in user is ommited from the list of users shown -->
+                    <% if(u.id !== locals.user.id){ %>
+                        <p>
+                            <a href="/users/profile/<%= u.id %>">
+                                <%= u.name %>
+                            </a>
+                            <!-- Add friend button -->
+                            <!-- To be visible only if the user is currently not a friend -->
+                            <%  %>
+                            <a href="/users/add-friend/<%= u.id %>">
+                                <i class="fa-solid fa-plus"></i>
+                                Add Friend
+                            </a>
+                        </p>
+                    <% } %>
+
+                <% } %>
+            </section>
+            <div id="friends">
+                <h4>Your Friends</h4>
+                <!-- List of Friends -->
+                <% for(i of currentUsersFriends.friendships){ %>
+                    <p>
+                        <%= i.name %>
+                        <a href="/users/remove-friend/<%= i._id %>">X</a>
+                    </p>
+                    
+                <% } %>
+                <!-- Remove Friend Button -->
+            </div>
         <% } %>
-    </section>
+    </div>
 </div>
 
 <script src="/js/home_posts.js"></script>

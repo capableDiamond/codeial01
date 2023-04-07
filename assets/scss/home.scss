@@ -12,11 +12,24 @@
             padding: 0;
         }
     }
-
-    #user-friends{
+    #aside{
         width: 30%;
-        padding: 10px;
         border-left: 1px solid lightgray;
         height: 100%;
+        h4{
+            margin: 0;
+        }
+        #users{
+            height: 50vh;
+            overflow: scroll;
+            border-bottom: 1px solid lightgray;
+            padding: 10px;
+        }
+        #friends{
+            height: 50vh;
+            overflow: scroll;
+            padding: 10px;
+        }
     }
+    
 }

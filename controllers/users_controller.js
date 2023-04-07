@@ -304,3 +304,52 @@ module.exports.changePassword = async function(req,res){
     }
 
 }
+
+//Friendship Controllers
+//Add friend
+module.exports.addFriend = async function(req,res){
+    try{
+        //TODO Handle Duplication
+
+        let fromUser = await User.findOne({_id:req.user._id});
+        let toUser = await User.findOne({_id:req.params.id});
+
+        //check if friendship already exists
+        let exists = toUser.friendships.includes(fromUser._id);
+
+        if(exists){
+            // console.log('exists');
+            req.flash('error','Already a friend');
+            return res.redirect('back');
+
+        }
+
+        //add userId to friends array of user
+        fromUser.friendships.push(toUser);
+        toUser.friendships.push(fromUser);
+        fromUser.save();
+        toUser.save();
+
+        return res.redirect('back');
+        
+    }catch(err){
+        console.log(err);
+    }
+
+}
+
+//Remove Friend
+module.exports.removeFriend = async function(req,res){
+    try{
+        let removingUser = await User.findById(req.user._id);
+        let removedUser = await User.findById(req.params.id);
+        removingUser.friendships.pull(req.params.id);
+        removingUser.save();
+        removedUser.friendships.pull(req.user._id);
+        removedUser.save();
+
+        return res.redirect('back');
+    }catch(err){
+        console.log(err);
+    }
+}
