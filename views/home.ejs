@@ -47,16 +47,26 @@
                 <% for(i of currentUsersFriends.friendships){ %>
                     <p>
                         <%= i.name %>
+                        <!-- Remove Friend Button -->
                         <a href="/users/remove-friend/<%= i._id %>">X</a>
                     </p>
                     
                 <% } %>
-                <!-- Remove Friend Button -->
             </div>
         <% } %>
     </div>
+    <%- include('_chat_box') -%>
 </div>
 
 <script src="/js/home_posts.js"></script>
 <script src="/js/home_comments.js"></script>
 <script src="/js/home_likes.js"></script>
+<!-- Socket.io -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha512-59oxERSDGj1eMzmFW3acSaBHEMNi2GaeQC7nQYcTqM0vgcnavi4BpUhLkcJQE2G6fdtn8JVj7brt0EZuBV0ogQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="/js/chat_engine.js"></script>
+
+<% if(locals.user){ %>
+    <script>
+        new ChatEngine('user-chat-box','<%= locals.user.email %>')
+    </script>    
+<% } %>
