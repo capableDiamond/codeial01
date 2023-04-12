@@ -1,12 +1,12 @@
 const passport = require('passport');
 const JWTStrategy = require('passport-jwt').Strategy;
 const ExtractJWT = require('passport-jwt').ExtractJwt;
-
+const env = require('./environment');
 const User = require('../models/user');
 
 let opts = {
     jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-    secretOrKey : 'codeial'
+    secretOrKey :env.jwt_secret
 }
 
 //user is present in the jwt we are just checking if the user exists or not, for every request we are doing that

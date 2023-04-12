@@ -2,6 +2,7 @@ const nodemailer = require('nodemailer');
 //we will be using ejs to render the email
 const ejs = require('ejs');
 const path = require('path');
+const env = require('./environment');
 
 
 //defining transporter object which will be attached/assigned to nodemailer
@@ -16,17 +17,7 @@ const path = require('path');
 //     }
 // });
 
-let transporter = nodemailer.createTransport({
-    service:'gmail',
-    auth:{
-        type:'OAUTH2',
-        user:process.env.MAIL_USERNAME,
-        pass: process.env.MAIL_PASSWORD,
-        clientId:process.env.OAUTH_CLIENTID,
-        clientSecret: process.env.OAUTH_CLIENT_SECRET,
-        refreshToken: process.env.OAUTH_REFRESH_TOKEN
-    }
-});
+let transporter = nodemailer.createTransport(env.smtp);
 
 //it defines,whenever i am going to send an HTML email, where the files would be placed inside views
 let renderCommentTemplate = (data,relativePath)=>{

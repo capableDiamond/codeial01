@@ -1,4 +1,9 @@
+//setting up the values of env variables to the process object in node using dotenv package
+//loading it above oAuth so that the variables get defined before they are requested in the auth configs
+require('dotenv').config();
 const express = require('express');
+const env = require('./config/environment');
+const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const app = express();
 const port = 8000;
@@ -7,9 +12,7 @@ const db = require('./config/mongoose');
 //used for session cookie
 const session = require('express-session');
 const passport = require('passport');
-//setting up the values of env variables to the process object in node using dotenv package
-//loading it above oAuth so that the variables get defined before they are requested in the auth configs
-require('dotenv').config();
+
 const passportLocal = require('./config/passport-local-strategy');
 const passportJWT = require('./config/passport-jwt-strategy');
 const passportGoogle = require('./config/passport-google-oauth2-strategy');
@@ -21,15 +24,21 @@ const customMware = require('./config/middleware');
 //setting up the chat server to be used with socket.io
 //passed the express app server to it
 const chatServer = require('http').Server(app);
+
 //passed on this http chatServer to a chatsockets function in configs
 const chatSockets = require('./config/chat_sockets').chatSockets(chatServer);
+
 //this chat server is now listening to port 5000
 chatServer.listen(5000);//setting up port for this server
 console.log('Chat server is listening on port 5000');
 
+//setting up paths
+const path = require('path');
+
+
 app.use(sassMiddleware({
-    src: './assets/scss',
-    dest: './assets/css',
+    src: path.join(__dirname,env.asset_path,'scss'),
+    dest: path.join(__dirname,env.asset_path,'css'),
     debug:false,
     outputStyle:'expanded',
     prefix:'/css'
@@ -40,7 +49,7 @@ app.use(express.urlencoded());
 
 app.use(cookieParser());
 
-app.use(express.static('./assets'));
+app.use(express.static(env.asset_path));
 
 //makes the upload path available to the browser
 //for the route /uploads use express.static to find the path
@@ -60,7 +69,7 @@ app.set('views','./views');
 app.use(session({
     name:'codeial',
     //TODO change the secret before deployment in production mode
-    secret:'blahsomething',
+    secret:env.session_cookie_key,
     saveUninitialized:false,
     resave:false,
     cookie:{
