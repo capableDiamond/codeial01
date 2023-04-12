@@ -3,3 +3,4 @@ uploads/
 assets/images/
 .env
 dump.rdb
+production_logs/

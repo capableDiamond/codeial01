@@ -54,6 +54,10 @@ app.use(express.static(env.asset_path));
 //makes the upload path available to the browser
 //for the route /uploads use express.static to find the path
 app.use('/uploads',express.static(__dirname + '/uploads'));
+
+//setup morgan for logging
+app.use(logger(env.morgan.mode,env.morgan.options));
+
 app.use(expressLayouts);
 
 //extract styles and scripts from sub pages(variable part of a page) into the layout
