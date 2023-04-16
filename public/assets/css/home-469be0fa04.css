@@ -1,0 +1,39 @@
+#home-container {
+  display: flex;
+  height: 100%;
+}
+
+#home-container #feed-posts {
+  width: 70%;
+  padding: 10px;
+  text-align: center;
+}
+
+#home-container #feed-posts ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+#home-container #aside {
+  width: 30%;
+  border-left: 1px solid lightgray;
+  height: 100%;
+}
+
+#home-container #aside h4 {
+  margin: 0;
+}
+
+#home-container #aside #users {
+  height: 50vh;
+  overflow: scroll;
+  border-bottom: 1px solid lightgray;
+  padding: 10px;
+}
+
+#home-container #aside #friends {
+  height: 50vh;
+  overflow: scroll;
+  padding: 10px;
+}

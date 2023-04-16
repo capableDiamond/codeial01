@@ -35,14 +35,16 @@ console.log('Chat server is listening on port 5000');
 //setting up paths
 const path = require('path');
 
+if(env.name == 'development'){
+    app.use(sassMiddleware({
+        src: path.join(__dirname,env.asset_path,'scss'),
+        dest: path.join(__dirname,env.asset_path,'css'),
+        debug:false,
+        outputStyle:'expanded',
+        prefix:'/css'
+    }));
+}
 
-app.use(sassMiddleware({
-    src: path.join(__dirname,env.asset_path,'scss'),
-    dest: path.join(__dirname,env.asset_path,'css'),
-    debug:false,
-    outputStyle:'expanded',
-    prefix:'/css'
-}));
 
 
 app.use(express.urlencoded());
