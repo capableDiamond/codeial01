@@ -1,6 +1,7 @@
 //this is the js file that fetches the data from the form and submits it to the server in JSON Format
 //method to submit the form data using AJAX
 {  
+    console.log('called');
     let createPost = function(){
         let newPostForm = $('#new-post-form');
 

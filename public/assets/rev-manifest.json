@@ -9,5 +9,11 @@
   "css/user_profile.css": "css/user_profile-f5f65c3380.css",
   "images/a.png": "images/a-468112eaa7.png",
   "images/love.png": "images/love-e3e71c769e.png",
-  "images/rock.jpg": "images/rock-fa36a31775.jpg"
+  "images/rock.jpg": "images/rock-fa36a31775.jpg",
+  "js/chat_engine.js": "js/chat_engine-0b76df33d7.js",
+  "js/home_comments.js": "js/home_comments-8fcf571a3f.js",
+  "js/home_likes.js": "js/home_likes-53bac7f364.js",
+  "js/home_posts.js": "js/home_posts-027cabfaea.js",
+  "js/reset_password.js": "js/reset_password-691afae54e.js",
+  "js/user_profile.js": "js/user_profile-9cd1213689.js"
 }

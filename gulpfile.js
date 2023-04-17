@@ -33,8 +33,8 @@ gulp.task('css',function(done){
     return gulp.src('./assets/**/*.css')
     .pipe(rev())
     .pipe(gulp.dest('./public/assets'))
-    .pipe(rev.manifest({
-        cwd:'public',//current working directory
+    .pipe(rev.manifest('public/assets/rev-manifest.json', {
+        base: './public/assets',//current working directory
         merge:true//if it already exists it will merge it rather than creating new
     }))//store a manifest
     .pipe(gulp.dest('./public/assets'));
@@ -42,18 +42,32 @@ gulp.task('css',function(done){
 });
 
 //minifying js
-gulp.task('js',function(done){
-    console.log('minifying js....');
+// gulp.task('js', function(done){
+//     console.log('minifying js...');
+//      gulp.src('./assets/**/*.js')
+//     .pipe(uglify())
+//     .pipe(rev())
+//     .pipe(gulp.dest('./public/assets'))
+//     .pipe(rev.manifest({
+//         cwd: 'public',
+//         merge: true
+//     }))
+//     .pipe(gulp.dest('./public/assets'));
+//     done()
+// });
+
+gulp.task('js', function (done) {
+    console.log('minifying js...');
     gulp.src('./assets/**/*.js')
-    .pipe(uglify())
-    .pipe(rev())
-    .pipe(gulp.dest('./public/assets'))
-    .pipe(rev.manifest({
-        cwd:'public',
-        merge:true
-    }))
-    .pipe(gulp.dest('./public/assets'));
-    done();
+        .pipe(uglify())
+        .pipe(rev())
+        .pipe(gulp.dest('./public/assets/'))
+        .pipe(rev.manifest('public/assets/rev-manifest.json', {
+            base: './public/assets',
+            merge: true // merge with the existing manifest (if one exists)
+        }))
+        .pipe(gulp.dest('./public/assets/'));
+    done()
 });
 
 //compressing images
@@ -63,8 +77,8 @@ gulp.task('images',function(done){
     .pipe(imagemin())
     .pipe(rev())
     .pipe(gulp.dest('./public/assets'))
-    .pipe(rev.manifest({
-        cwd:'public',
+    .pipe(rev.manifest('public/assets/rev-manifest.json', {
+        base: './public/assets',
         merge:true
     }))
     .pipe(gulp.dest('./public/assets'));
@@ -79,6 +93,7 @@ gulp.task('clean:assets',function(done){
 });
 
 gulp.task('build',gulp.series('clean:assets','css','js','images'),function(done){
-    console.log('building assets');
+    console.log('Building assets');
     done();
 });
+

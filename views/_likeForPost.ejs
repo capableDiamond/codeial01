@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="/css/like.css">
+<link rel="stylesheet" href="<%= assetPath('css/like.css') %>">
 <div class="like" id="like-post-<%= post._id %>">
     <p><%= post.likes.length %></p>
     <a href="/likes/toggle/?id=<%= post._id %>&type=Post" class="like-link">
